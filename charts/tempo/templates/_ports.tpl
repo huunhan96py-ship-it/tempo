@@ -54,7 +54,7 @@
   port: {{ $port }}
   protocol: TCP
   targetPort: 14250
-{{- end }}  
+{{- end }}
 {{- end }}
 - name: tempo-zipkin
   port: 9411
@@ -68,7 +68,7 @@
   port: 55681
   protocol: TCP
   targetPort: 55681
-{{- $endpoint := .Values.tempo.receivers.otlp.protocols.grpc }}
+{{- $endpoint := .Values.tempo.receivers.otlp.protocols.http }}
 {{- with $endpoint.endpoint }}
 {{- $port := regexSplit ":" . -1 | last }}
 - name: tempo-otlp-http

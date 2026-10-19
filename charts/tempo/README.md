@@ -46,6 +46,30 @@ See the [changelog](https://grafana-community.github.io/helm-charts/changelog/?c
 
 A major chart version change indicates that there is an incompatible breaking change needing manual actions.
 
+### From Chart versions < 4.0.0
+
+Chart 4.0.0 changes the default receivers and storage:
+
+* Only the OTLP HTTP receiver (`4318`) is enabled by default. The Jaeger receivers
+  (`6831`, `6832`, `14268`, `14250`) and the OTLP gRPC receiver (`4317`) are no longer
+  configured or exposed. To keep them, set them again under `tempo.receivers`, for example:
+
+  ```yaml
+  tempo:
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: "0.0.0.0:4317"
+          http:
+            endpoint: "0.0.0.0:4318"
+  ```
+
+* `persistence.enabled` now defaults to `true`. Because `volumeClaimTemplates` of an existing
+  StatefulSet cannot be changed, delete the StatefulSet (keeping its pods) before upgrading:
+  `kubectl delete statefulset <release>-tempo --cascade=orphan`. Set `persistence.enabled: false`
+  to keep the previous behaviour.
+
 ### From Chart versions < 3.2.0
 
 Chart 3.2.0 fixes retention enforcement by copying the backend scheduler's compaction

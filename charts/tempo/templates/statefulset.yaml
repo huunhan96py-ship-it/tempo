@@ -72,6 +72,7 @@ spec:
         ports:
         - containerPort: 3200
           name: prom-metrics
+        {{- if .Values.tempo.receivers.jaeger }}
         - containerPort: 6831
           name: jaeger-thrift-c
           protocol: UDP
@@ -82,16 +83,21 @@ spec:
           name: jaeger-thrift-h
         - containerPort: 14250
           name: jaeger-grpc
+        {{- end }}
         - containerPort: 9411
           name: zipkin
         - containerPort: 55680
           name: otlp-legacy
+        {{- if .Values.tempo.receivers.otlp.protocols.grpc }}
         - containerPort: 4317
           name: otlp-grpc
+        {{- end }}
         - containerPort: 55681
           name: otlp-httplegacy
+        {{- if .Values.tempo.receivers.otlp.protocols.http }}
         - containerPort: 4318
           name: otlp-http
+        {{- end }}
         livenessProbe:
           {{- toYaml .Values.tempo.livenessProbe | nindent 12 }}
         readinessProbe:

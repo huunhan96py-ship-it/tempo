@@ -61,3 +61,26 @@ tests:
       - equal:
           path: metadata.labels["prometheus.io/service-monitor"]
           value: "false"
+
+  - it: should expose the OTLP HTTP receiver port by default
+    asserts:
+      - contains:
+          path: spec.ports
+          content:
+            name: tempo-otlp-http
+            port: 4318
+            protocol: TCP
+            targetPort: 4318
+
+  - it: should not expose the OTLP gRPC or Jaeger ports by default
+    asserts:
+      - notContains:
+          path: spec.ports
+          content:
+            name: grpc-tempo-otlp
+          any: true
+      - notContains:
+          path: spec.ports
+          content:
+            name: tempo-jaeger-thrift-http
+          any: true

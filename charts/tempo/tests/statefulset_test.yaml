@@ -17,3 +17,40 @@ tests:
       - matchRegex:
           path: spec.template.spec.containers[0].image
           pattern: "^docker.io/grafana/tempo:3\\."
+
+  - it: should enable persistence by default
+    template: statefulset.yaml
+    asserts:
+      - equal:
+          path: spec.volumeClaimTemplates[0].spec.resources.requests.storage
+          value: 10Gi
+
+  - it: should only declare the OTLP HTTP receiver container port by default
+    template: statefulset.yaml
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 4318
+            name: otlp-http
+      - notContains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 4317
+            name: otlp-grpc
+      - notContains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 14250
+            name: jaeger-grpc
+
+  - it: should declare the Jaeger container ports when the receiver is configured
+    template: statefulset.yaml
+    set:
+      tempo.receivers.jaeger.protocols.grpc.endpoint: 0.0.0.0:14250
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 14250
+            name: jaeger-grpc
