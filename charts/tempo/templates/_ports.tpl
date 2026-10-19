@@ -2,6 +2,7 @@
 
 {{/* UDP sockets */}}
 {{- define "tempo.udp"}}
+{{- if .Values.tempo.receivers.jaeger }}
 {{- $endpoint := .Values.tempo.receivers.jaeger.protocols.thrift_compact }}
 {{- with $endpoint.endpoint }}
 {{- $port := regexSplit ":" . -1 | last }}
@@ -17,6 +18,7 @@
   port: {{ $port }}
   protocol: UDP
   targetPort: 6832
+{{- end }}
 {{- end }}
 {{- /* end of define */}}
 {{- end }}
@@ -36,6 +38,7 @@
   port: {{ .Values.tempoQuery.service.port }}
   targetPort: {{ .Values.tempoQuery.service.port }}
 {{- end }}
+{{- if .Values.tempo.receivers.jaeger }}
 {{- $endpoint := .Values.tempo.receivers.jaeger.protocols.thrift_http }}
 {{- with $endpoint.endpoint }}
 {{- $port := regexSplit ":" . -1 | last }}
@@ -51,6 +54,7 @@
   port: {{ $port }}
   protocol: TCP
   targetPort: 14250
+{{- end }}  
 {{- end }}
 - name: tempo-zipkin
   port: 9411
@@ -65,14 +69,6 @@
   protocol: TCP
   targetPort: 55681
 {{- $endpoint := .Values.tempo.receivers.otlp.protocols.grpc }}
-{{- with $endpoint.endpoint }}
-{{- $port := regexSplit ":" . -1 | last }}
-- name: grpc-tempo-otlp
-  port: {{ $port }}
-  protocol: TCP
-  targetPort: 4317
-{{- end }}
-{{- $endpoint := .Values.tempo.receivers.otlp.protocols.http }}
 {{- with $endpoint.endpoint }}
 {{- $port := regexSplit ":" . -1 | last }}
 - name: tempo-otlp-http

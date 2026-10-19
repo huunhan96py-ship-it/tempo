@@ -1,39 +1,18 @@
 global:
   # -- Common labels for all object directly managed by this chart.
   commonLabels: {}
-
-  # -- Overrides the Docker registry globally for all images
   imageRegistry: null
-
-# -- Overrides the chart's name
 nameOverride: ""
-
-# -- Overrides the chart's computed fullname
 fullnameOverride: ""
-
-# -- Define the amount of instances
 replicas: 1
-
-# -- Number of old history to retain to allow rollback (If not set, default Kubernetes value is set to 10)
-# revisionHistoryLimit: 1
-
-# -- labels for tempo
 labels: {}
-
-# -- Annotations for the StatefulSet
 annotations: {}
-
 tempo:
   registry: docker.io
   repository: grafana/tempo
   tag: ""
   pullPolicy: IfNotPresent
-  ## Optionally specify an array of imagePullSecrets.
-  ## Secrets must be manually created in the namespace.
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-  ##
-  # pullSecrets:
-  #   - myRegistryKeySecretName
+  
 
   updateStrategy: RollingUpdate
   resources: {}
@@ -176,20 +155,8 @@ tempo:
   # the receives all come from the OpenTelemetry collector.  more configuration information can
   # be found there: https://github.com/open-telemetry/opentelemetry-collector/tree/master/receiver
   receivers:
-    jaeger:
-      protocols:
-        grpc:
-          endpoint: 0.0.0.0:14250
-        thrift_binary:
-          endpoint: 0.0.0.0:6832
-        thrift_compact:
-          endpoint: 0.0.0.0:6831
-        thrift_http:
-          endpoint: 0.0.0.0:14268
     otlp:
       protocols:
-        grpc:
-          endpoint: "0.0.0.0:4317"
         http:
           endpoint: "0.0.0.0:4318"
   securityContext: {}
@@ -449,7 +416,7 @@ serviceMonitor:
   # scrapeTimeout: 10s
 
 persistence:
-  enabled: false
+  enabled: true 
     # -- Enable StatefulSetAutoDeletePVC feature
   enableStatefulSetAutoDeletePVC: false
   # storageClassName: local-path
